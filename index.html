@@ -1,0 +1,2027 @@
+
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101510">
+<title>Crodle</title>
+
+<style>
+:root {
+    --bg: #101510;
+    --panel: #19231b;
+    --green: #538d4e;
+    --yellow: #b59f3b;
+    --gray: #3a3a3c;
+    --text: #f5f5f5;
+    --muted: #929b94;
+    --border: #343a35;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+        radial-gradient(ellipse at 50% 0%, #23402b 0%, transparent 55%),
+        var(--bg);
+    color: var(--text);
+    font-family: Arial, Helvetica, sans-serif;
+    overflow-x: hidden;
+}
+
+button { font-family: inherit; }
+
+/* SNOW */
+
+#snowContainer {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.snow {
+    position: absolute;
+    top: -35px;
+    color: white;
+    opacity: .65;
+    user-select: none;
+    animation: snowfall linear infinite;
+}
+
+@keyframes snowfall {
+    0% { transform: translate3d(0,-5vh,0) rotate(0deg); }
+    50% { transform: translate3d(35px,50vh,0) rotate(180deg); }
+    100% { transform: translate3d(-25px,110vh,0) rotate(360deg); }
+}
+
+/* BIGGER CHRISTMAS TREES */
+
+.side-tree {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: clamp(125px, 16vw, 220px);
+    line-height: 1.15;
+    z-index: 0;
+    pointer-events: none;
+    filter: drop-shadow(0 0 24px #174b28);
+    text-align: center;
+    user-select: none;
+}
+
+.side-tree.left { left: 1%; }
+.side-tree.right { right: 1%; }
+
+.tree-decoration {
+    display: block;
+    font-size: 30px;
+    letter-spacing: 15px;
+    margin-top: -8px;
+    color: #e7c66b;
+}
+
+@media(max-width: 1050px) {
+    .side-tree { display: none; }
+}
+
+/* HEADER */
+
+header {
+    width: 100%;
+    max-width: 650px;
+    margin: auto;
+    padding: 17px 20px 13px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ffffff20;
+    position: relative;
+    z-index: 2;
+}
+
+.logo {
+    font-size: 33px;
+    font-weight: 900;
+    letter-spacing: 3px;
+}
+
+.logo span { color: #d34e4e; }
+
+.subtitle {
+    color: #aab9ac;
+    font-size: 11px;
+    letter-spacing: 2px;
+    margin-top: 5px;
+}
+
+.header-actions { display: flex; gap: 9px; }
+
+.icon-button {
+    width: 40px;
+    height: 40px;
+    border: 1px solid #ffffff25;
+    background: #ffffff0c;
+    border-radius: 11px;
+    color: white;
+    font-size: 19px;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.icon-button:hover {
+    background: #ffffff20;
+    transform: translateY(-2px);
+}
+
+/* SCENES */
+
+.scene {
+    display: none;
+    position: relative;
+    z-index: 1;
+    min-height: calc(100vh - 75px);
+    animation: sceneIn .3s ease;
+}
+
+.scene.active { display: block; }
+
+@keyframes sceneIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* GAME */
+
+#gameScene main {
+    width: 100%;
+    max-width: 480px;
+    margin: auto;
+    padding: 12px 15px 35px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.daily-info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin: 12px 0 15px;
+    color: #b9c9bd;
+    font-size: 12px;
+}
+
+.rounds { display: flex; gap: 7px; }
+
+.round-dot {
+    width: 29px;
+    height: 29px;
+    border-radius: 50%;
+    background: #28352d;
+    border: 1px solid #53665a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+}
+
+.round-dot.active {
+    background: #315a3c;
+    border-color: #75b982;
+}
+
+.round-dot.done {
+    background: var(--green);
+    border-color: var(--green);
+}
+
+#roundTitle {
+    font-size: 13px;
+    color: #e4d6a6;
+    margin-bottom: 15px;
+    letter-spacing: 1px;
+}
+
+/* WORDLE BOARD */
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(5,56px);
+    grid-template-rows: repeat(6,56px);
+    gap: 5px;
+    margin: 0 auto 15px;
+    padding: 0;
+    background: transparent;
+}
+
+.tile {
+    width: 56px;
+    height: 56px;
+    border: 2px solid #3a3a3c;
+    background: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 25px;
+    font-weight: 800;
+    text-transform: uppercase;
+    border-radius: 0;
+    transition: background .25s, border .15s;
+    user-select: none;
+}
+
+.tile.filled { border-color: #818384; }
+.tile.correct { background: var(--green); border-color: var(--green); }
+.tile.present { background: var(--yellow); border-color: var(--yellow); }
+.tile.absent { background: var(--gray); border-color: var(--gray); }
+.tile.pop { animation: pop .12s ease; }
+
+@keyframes pop { 50% { transform: scale(1.08); } }
+.tile.flip { animation: flip .35s ease; }
+@keyframes flip { 50% { transform: rotateX(90deg); } }
+
+#message {
+    min-height: 30px;
+    margin: 2px 0 9px;
+    color: #e5d9b6;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* KEYBOARD */
+
+.keyboard {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-top: 3px;
+}
+
+.key-row {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+}
+
+.key {
+    height: 49px;
+    min-width: 25px;
+    flex: 1;
+    max-width: 43px;
+    border: none;
+    border-radius: 5px;
+    background: #56635a;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.key.wide { max-width: 65px; font-size: 11px; }
+.key.correct { background: var(--green); }
+.key.present { background: var(--yellow); }
+.key.absent { background: #343b39; }
+.key:active { transform: scale(.94); }
+
+@media (hover: none) and (pointer: coarse) {
+    .keyboard { display: flex; }
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .keyboard { display: none; }
+}
+
+.bottom-info {
+    color: #85988a;
+    font-size: 11px;
+    text-align: center;
+    margin-top: 19px;
+    letter-spacing: .5px;
+}
+
+/* STATISTICS PAGE */
+
+#statsScene {
+    max-width: 900px;
+    margin: auto;
+    padding: 25px 20px 55px;
+}
+
+.stats-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+}
+
+.back-button {
+    border: 1px solid #ffffff20;
+    background: #ffffff0b;
+    color: white;
+    padding: 11px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: .2s;
+}
+
+.back-button:hover { background: #ffffff20; }
+
+.stats-heading {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.stats-heading .eyebrow {
+    color: #d7c68d;
+    font-size: 11px;
+    letter-spacing: 3px;
+    margin-bottom: 10px;
+}
+
+.stats-heading h1 {
+    margin: 0;
+    font-size: 34px;
+    letter-spacing: -.5px;
+}
+
+.stats-heading p {
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 9px;
+}
+
+/* STAT CARDS */
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 13px;
+}
+
+.stat-card {
+    background: linear-gradient(145deg,#202b23,#172019);
+    border: 1px solid #ffffff12;
+    border-radius: 16px;
+    padding: 19px 17px;
+    min-height: 125px;
+    position: relative;
+    overflow: hidden;
+    transition: .2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    border-color: #ffffff30;
+}
+
+.stat-card::after {
+    content: "";
+    position: absolute;
+    width: 85px;
+    height: 85px;
+    border-radius: 50%;
+    background: #ffffff06;
+    right: -25px;
+    bottom: -35px;
+}
+
+.stat-icon { font-size: 21px; margin-bottom: 13px; }
+
+.stat-number {
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -.5px;
+}
+
+.stat-label {
+    font-size: 10px;
+    color: #a8b9aa;
+    margin-top: 6px;
+    letter-spacing: 1.2px;
+}
+
+.stats-section { margin-top: 30px; }
+
+.section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.section-heading h3 {
+    font-size: 13px;
+    letter-spacing: 1.3px;
+    margin: 0;
+}
+
+.section-heading span {
+    font-size: 11px;
+    color: var(--muted);
+}
+
+/* CHART CARDS */
+
+.chart-card {
+    background: #19231b;
+    border: 1px solid #ffffff12;
+    border-radius: 16px;
+    padding: 20px;
+    min-width: 0;
+}
+
+.chart-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 13px;
+}
+
+.chart-title {
+    color: #cbd6cd;
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 17px;
+}
+
+.chart-subtitle {
+    color: #849487;
+    font-size: 10px;
+    margin-top: 7px;
+}
+
+#lineChart {
+    width: 100%;
+    height: 210px;
+    display: block;
+    overflow: visible;
+}
+
+.chart-empty {
+    min-height: 190px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #829184;
+    font-size: 12px;
+    line-height: 1.7;
+    padding: 15px;
+}
+
+.chart-legend {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+    color: #aab9ac;
+    font-size: 10px;
+}
+
+.legend-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 5px;
+    background: var(--green);
+}
+
+/* DISTRIBUTION */
+
+.distribution {
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+}
+
+.dist-row {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    font-size: 13px;
+}
+
+.dist-number {
+    width: 13px;
+    color: #c3ccc5;
+    font-weight: bold;
+}
+
+.dist-bar-wrap {
+    flex: 1;
+    height: 27px;
+    background: #ffffff08;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.dist-bar {
+    height: 100%;
+    min-width: 0;
+    background: #626a63;
+    border-radius: 5px;
+    padding: 0 9px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    transition: width .4s ease;
+}
+
+.dist-bar.highlight { background: var(--green); }
+
+/* DONUT CHART */
+
+.donut-layout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    min-height: 190px;
+    flex-wrap: wrap;
+}
+
+.donut {
+    width: 145px;
+    height: 145px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    position: relative;
+    background: conic-gradient(var(--green) 0deg,#39443c 0deg);
+    flex-shrink: 0;
+}
+
+.donut::before {
+    content: "";
+    position: absolute;
+    width: 105px;
+    height: 105px;
+    border-radius: 50%;
+    background: #19231b;
+}
+
+.donut-center {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+}
+
+.donut-center strong {
+    display: block;
+    font-size: 27px;
+}
+
+.donut-center span {
+    color: #91a092;
+    font-size: 10px;
+}
+
+.donut-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+    font-size: 12px;
+    color: #c5d0c7;
+}
+
+.donut-legend div {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.legend-square {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    display: inline-block;
+}
+
+/* EXTRA STATS */
+
+.extra-grid {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 12px;
+}
+
+.extra-card {
+    background: #19231b;
+    border: 1px solid #ffffff12;
+    border-radius: 14px;
+    padding: 17px;
+}
+
+.extra-card .label {
+    color: #a8b9aa;
+    font-size: 10px;
+    letter-spacing: 1px;
+}
+
+.extra-card .value {
+    margin-top: 10px;
+    font-size: 23px;
+    font-weight: 800;
+}
+
+/* HISTORY */
+
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.history-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: #19231b;
+    border: 1px solid #ffffff10;
+    border-radius: 12px;
+    padding: 14px 16px;
+}
+
+.history-date {
+    font-size: 12px;
+    color: #dce5dd;
+    font-weight: bold;
+}
+
+.history-detail {
+    color: #8fa092;
+    font-size: 10px;
+    margin-top: 5px;
+}
+
+.history-result {
+    font-size: 12px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.history-result.good { color: #83c77b; }
+.history-result.partial { color: #d2b75d; }
+.history-empty {
+    text-align: center;
+    color: #8fa092;
+    font-size: 12px;
+    padding: 25px;
+    background: #19231b;
+    border-radius: 12px;
+}
+
+.stats-footer {
+    margin-top: 28px;
+    padding: 22px;
+    background: linear-gradient(135deg,#253d2b,#18241b);
+    border: 1px solid #ffffff12;
+    border-radius: 15px;
+    text-align: center;
+}
+
+.stats-footer .big { font-size: 25px; margin-bottom: 8px; }
+.stats-footer h3 { font-size: 15px; margin: 0 0 7px; }
+.stats-footer p {
+    color: #b5c2b7;
+    font-size: 12px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* HELP MODAL */
+
+.modal {
+    position: fixed;
+    inset: 0;
+    background: #000c;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    z-index: 10;
+    backdrop-filter: blur(7px);
+}
+
+.modal.show { display: flex; }
+
+.modal-content {
+    background: linear-gradient(145deg,#1e3023,#111a14);
+    border: 1px solid #526c55;
+    width: 100%;
+    max-width: 410px;
+    max-height: 85vh;
+    overflow-y: auto;
+    border-radius: 19px;
+    padding: 25px;
+    position: relative;
+    box-shadow: 0 20px 70px #0009;
+}
+
+.modal-content h2 {
+    margin: 0 0 23px;
+    text-align: center;
+    font-size: 23px;
+}
+
+.close {
+    position: absolute;
+    right: 16px;
+    top: 12px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 25px;
+    cursor: pointer;
+}
+
+.help-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin: 14px 0;
+    font-size: 13px;
+    color: #d0d9d1;
+}
+
+.example-tile {
+    width: 31px;
+    height: 31px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.toast {
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #e8e8e8;
+    color: #151515;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 13px;
+    display: none;
+    z-index: 20;
+    white-space: nowrap;
+}
+
+.toast.show { display: block; }
+
+/* RESPONSIVE */
+
+@media(max-width: 650px) {
+    .stats-grid { grid-template-columns: repeat(2,1fr); }
+    .chart-grid { grid-template-columns: 1fr; }
+    .extra-grid { grid-template-columns: repeat(2,1fr); }
+    #statsScene { padding: 20px 15px 35px; }
+    .stats-heading h1 { font-size: 28px; }
+}
+
+@media(max-width: 430px) {
+    .stat-card { padding: 15px 13px; min-height: 115px; }
+    .stat-number { font-size: 28px; }
+
+    .board {
+        grid-template-columns: repeat(5,53px);
+        grid-template-rows: repeat(6,53px);
+        gap: 5px;
+    }
+
+    .tile { width: 53px; height: 53px; font-size: 23px; }
+    .key { min-width: 21px; height: 45px; font-size: 12px; }
+    .key-row { gap: 4px; }
+}
+
+@media(max-width: 360px) {
+    .board {
+        grid-template-columns: repeat(5,48px);
+        grid-template-rows: repeat(6,48px);
+        gap: 5px;
+    }
+
+    .tile { width: 48px; height: 48px; font-size: 21px; }
+    .key { min-width: 18px; height: 42px; font-size: 11px; }
+    .key.wide { font-size: 9px; }
+}
+</style>
+</head>
+
+<body>
+
+<div id="snowContainer"></div>
+
+<div class="side-tree left">
+    🎄
+    <span class="tree-decoration">⭐</span>
+    <span class="tree-decoration">🔴</span>
+    <span class="tree-decoration">✨</span>
+</div>
+
+<div class="side-tree right">
+    🎄
+    <span class="tree-decoration">⭐</span>
+    <span class="tree-decoration">✨</span>
+    <span class="tree-decoration">🔴</span>
+</div>
+
+<header>
+    <div>
+        <div class="logo">CR<span>O</span>DLE</div>
+        <div class="subtitle">HRVATSKI WORDLE 🎄</div>
+    </div>
+
+    <div class="header-actions">
+        <button class="icon-button" id="helpButton" aria-label="Upute">?</button>
+        <button class="icon-button" id="statsButton" aria-label="Statistika">▤</button>
+    </div>
+</header>
+
+<!-- GAME -->
+
+<section class="scene active" id="gameScene">
+<main>
+    <div class="daily-info">
+        <span>DANAŠNJE RIJEČI</span>
+        <div class="rounds" id="rounds"></div>
+    </div>
+
+    <div id="roundTitle">RIJEČ 1 OD 3</div>
+    <div class="board" id="board"></div>
+    <div id="message" role="status" aria-live="polite"></div>
+
+    <div class="keyboard" id="keyboard">
+        <div class="key-row">
+            <button class="key">Q</button>
+            <button class="key">W</button>
+            <button class="key">E</button>
+            <button class="key">R</button>
+            <button class="key">T</button>
+            <button class="key">Z</button>
+            <button class="key">U</button>
+            <button class="key">I</button>
+            <button class="key">O</button>
+            <button class="key">P</button>
+            <button class="key">Š</button>
+            <button class="key">Đ</button>
+        </div>
+
+        <div class="key-row">
+            <button class="key">A</button>
+            <button class="key">S</button>
+            <button class="key">D</button>
+            <button class="key">F</button>
+            <button class="key">G</button>
+            <button class="key">H</button>
+            <button class="key">J</button>
+            <button class="key">K</button>
+            <button class="key">L</button>
+            <button class="key">Č</button>
+            <button class="key">Ć</button>
+        </div>
+
+        <div class="key-row">
+            <button class="key wide" data-action="enter">UNOS</button>
+            <button class="key">Y</button>
+            <button class="key">X</button>
+            <button class="key">C</button>
+            <button class="key">V</button>
+            <button class="key">B</button>
+            <button class="key">N</button>
+            <button class="key">M</button>
+            <button class="key">Ž</button>
+            <button class="key wide" data-action="backspace">⌫</button>
+        </div>
+    </div>
+
+    <div class="bottom-info">
+        3 RIJEČI • 6 POKUŠAJA • SVAKI DAN NOVI IZAZOV
+    </div>
+</main>
+</section>
+
+<!-- STATISTICS -->
+
+<section class="scene" id="statsScene">
+
+    <div class="stats-top">
+        <button class="back-button" id="backButton">← Natrag na igru</button>
+        <span style="color:#d7c68d;font-size:12px;letter-spacing:1px">CRODLE</span>
+    </div>
+
+    <div class="stats-heading">
+        <div class="eyebrow">TVOJ CRODLE PROFIL</div>
+        <h1>Statistika 📊</h1>
+        <p>Detaljan pregled tvojih rezultata i napretka</p>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">🎮</div>
+            <div class="stat-number" id="games">0</div>
+            <div class="stat-label">ODIGRANI DANI</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">🏆</div>
+            <div class="stat-number" id="wins">0</div>
+            <div class="stat-label">SAVRŠENI DANI</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">📈</div>
+            <div class="stat-number" id="percentage">0%</div>
+            <div class="stat-label">USPJEŠNOST DANA</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">🔥</div>
+            <div class="stat-number" id="streak">0</div>
+            <div class="stat-label">TRENUTNI NIZ</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">🧩</div>
+            <div class="stat-number" id="wordsWon">0</div>
+            <div class="stat-label">POGOĐENE RIJEČI</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">⭐</div>
+            <div class="stat-number" id="maxStreak">0</div>
+            <div class="stat-label">NAJBOLJI NIZ</div>
+        </div>
+    </div>
+
+    <!-- CHARTS -->
+
+    <div class="stats-section">
+        <div class="section-heading">
+            <h3>NAPREDAK KROZ VRIJEME</h3>
+            <span>Posljednjih 14 dana</span>
+        </div>
+
+        <div class="chart-card">
+            <div class="chart-title">Uspješnost po danima</div>
+            <div id="lineChartContainer">
+                <svg id="lineChart" viewBox="0 0 600 210" preserveAspectRatio="none"></svg>
+            </div>
+            <div class="chart-legend">
+                <span><i class="legend-dot"></i>Uspješnost dnevnog izazova</span>
+            </div>
+            <div class="chart-subtitle">Postotak pogođenih riječi od ukupno tri dnevne riječi.</div>
+        </div>
+    </div>
+
+    <div class="stats-section">
+        <div class="section-heading">
+            <h3>PREGLED REZULTATA</h3>
+            <span>Ukupna statistika</span>
+        </div>
+
+        <div class="chart-grid">
+            <div class="chart-card">
+                <div class="chart-title">Raspodjela pokušaja</div>
+                <div class="distribution" id="distribution"></div>
+                <div class="chart-subtitle">Koliko si puta pogodio riječ u određenom pokušaju.</div>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-title">Uspješnost riječi</div>
+                <div class="donut-layout">
+                    <div class="donut" id="donut">
+                        <div class="donut-center">
+                            <strong id="donutPercent">0%</strong>
+                            <span>USPJEŠNOST</span>
+                        </div>
+                    </div>
+
+                    <div class="donut-legend">
+                        <div>
+                            <i class="legend-square" style="background:#538d4e"></i>
+                            Pogođene: <strong id="donutWon">0</strong>
+                        </div>
+                        <div>
+                            <i class="legend-square" style="background:#39443c"></i>
+                            Nepogođene: <strong id="donutLost">0</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- EXTRA STATS -->
+
+    <div class="stats-section">
+        <div class="section-heading">
+            <h3>DODATNA STATISTIKA</h3>
+            <span>Tvoj napredak</span>
+        </div>
+
+        <div class="extra-grid">
+            <div class="extra-card">
+                <div class="label">PROSJEČNO POKUŠAJA</div>
+                <div class="value" id="average">–</div>
+            </div>
+
+            <div class="extra-card">
+                <div class="label">UKUPNO POKUŠAJA</div>
+                <div class="value" id="totalGuesses">0</div>
+            </div>
+
+            <div class="extra-card">
+                <div class="label">RIJEŠENE RIJEČI</div>
+                <div class="value" id="roundsWon">0</div>
+            </div>
+
+            <div class="extra-card">
+                <div class="label">NEPOGOĐENE RIJEČI</div>
+                <div class="value" id="wordsLost">0</div>
+            </div>
+
+            <div class="extra-card">
+                <div class="label">NAJBOLJI REZULTAT</div>
+                <div class="value" id="bestGuess">–</div>
+            </div>
+
+            <div class="extra-card">
+                <div class="label">ZADNJI IZAZOV</div>
+                <div class="value" id="lastPlayed" style="font-size:15px">–</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HISTORY -->
+
+    <div class="stats-section">
+        <div class="section-heading">
+            <h3>POVIJEST IGRANJA</h3>
+            <span>Posljednji rezultati</span>
+        </div>
+        <div class="history-list" id="historyList"></div>
+    </div>
+
+    <div class="stats-footer">
+        <div class="big">🎄 ❄️ 🎄</div>
+        <h3>Samo tako nastavi!</h3>
+        <p>
+            Svaki dan donosi tri nove hrvatske riječi.
+            Pokušaj poboljšati svoj niz i pogoditi sve riječi!
+        </p>
+    </div>
+</section>
+
+<!-- HELP MODAL -->
+
+<div class="modal" id="helpModal">
+    <div class="modal-content">
+        <button class="close" data-close="helpModal">×</button>
+        <h2>Kako igrati? 🎄</h2>
+
+        <p style="font-size:13px;color:#bdc9bf;line-height:1.7">
+            Pogodi skrivenu hrvatsku riječ od pet slova.
+            Imaš šest pokušaja za svaku od tri dnevne riječi.
+        </p>
+
+        <div class="help-row">
+            <div class="example-tile" style="background:#538d4e">A</div>
+            <span>Slovo je na točnom mjestu.</span>
+        </div>
+
+        <div class="help-row">
+            <div class="example-tile" style="background:#b59f3b">A</div>
+            <span>Slovo postoji, ali je na pogrešnom mjestu.</span>
+        </div>
+
+        <div class="help-row">
+            <div class="example-tile" style="background:#3a3a3c">A</div>
+            <span>Slovo se ne nalazi u riječi.</span>
+        </div>
+
+        <p style="font-size:12px;color:#aab9ac;line-height:1.6">
+            Na računalu koristi fizičku tipkovnicu,
+            a na mobitelu tipkovnicu na ekranu.
+        </p>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+
+// ==========================================
+// CRODLE - WORDLE GAME
+// ==========================================
+
+const WORDS = [
+    "OBLAK", "SUNCE", "PTICA", "ZVONO",
+    "SREĆA", "LJETO", "JESEN", "SLIKA",
+    "IGRAČ", "LOPTA", "STAZA", "CESTA",
+    "GRANA", "TORBA", "ŠKOLA", "GLAVA",
+    "MISLI", "JUTRO", "VEČER", "NOĆAS",
+    "VRATA", "KAMEN", "KARTA", "KRUHA",
+    "JAKNA", "ČIZMA", "SANKE", "BOŽIĆ",
+    "ANĐEO", "UKRAS", "ZDRAV", "RADAR",
+    "MAGLA", "VJETAR", "MOREM", "PRSTI",
+    "SNIJEG", "KRAST", "BRAVO", "KUTAK",
+    "ZRAKA", "MLADI", "SLOVO", "PISMO",
+    "STVAR", "MIRIS", "ZVUKA", "GRADU"
+].filter(word => Array.from(word).length === 5);
+
+function normalize(value) {
+    return value.toLocaleUpperCase("hr-HR").normalize("NFC");
+}
+
+function getDateKey() {
+    const d = new Date();
+
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+
+function hashString(str) {
+    let hash = 0;
+
+    for (let i = 0; i < str.length; i++) {
+        hash = (hash * 31 + str.charCodeAt(i)) >>> 0;
+    }
+
+    return hash;
+}
+
+function getDailyWords() {
+    const hash = hashString(getDateKey());
+    const selected = [];
+
+    for (let i = 0; i < 3; i++) {
+        let index = (hash + i * 37) % WORDS.length;
+
+        while (selected.includes(WORDS[index])) {
+            index = (index + 1) % WORDS.length;
+        }
+
+        selected.push(WORDS[index]);
+    }
+
+    return selected;
+}
+
+// ==========================================
+// DATA AND STORAGE
+// ==========================================
+
+const STORAGE_KEY = "crodle_game_v2";
+const STATS_KEY = "crodle_stats_v2";
+
+let dailyWords = getDailyWords();
+
+function createNewGame() {
+    return {
+        date: getDateKey(),
+        currentRound: 0,
+        rounds: [
+            { guesses: [], finished: false, won: false },
+            { guesses: [], finished: false, won: false },
+            { guesses: [], finished: false, won: false }
+        ],
+        input: "",
+        completed: false
+    };
+}
+
+function createNewStats() {
+    return {
+        games: 0,
+        wins: 0,
+        streak: 0,
+        maxStreak: 0,
+        lastPlayed: "",
+        distribution: [0,0,0,0,0,0],
+        wordsWon: 0,
+        roundsWon: 0,
+        totalGuesses: 0,
+        solvedGuessTotal: 0,
+        wordsLost: 0,
+        bestGuess: 0,
+        history: []
+    };
+}
+
+let game = createNewGame();
+let stats = createNewStats();
+
+function loadData() {
+    try {
+        const savedGame = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        const savedStats = JSON.parse(localStorage.getItem(STATS_KEY));
+
+        if (savedStats) {
+            stats = {
+                ...createNewStats(),
+                ...savedStats
+            };
+
+            if (!Array.isArray(stats.distribution)) {
+                stats.distribution = [0,0,0,0,0,0];
+            }
+
+            stats.distribution = [
+                ...stats.distribution,
+                0,0,0,0,0,0
+            ].slice(0,6);
+
+            if (!Array.isArray(stats.history)) {
+                stats.history = [];
+            }
+        }
+
+        if (savedGame && savedGame.date === getDateKey()) {
+            game = savedGame;
+
+            // Make sure older saved games have all required fields.
+            if (!Array.isArray(game.rounds) || game.rounds.length !== 3) {
+                game = createNewGame();
+            }
+
+            game.rounds.forEach(round => {
+                if (!Array.isArray(round.guesses)) round.guesses = [];
+            });
+        }
+
+    } catch(e) {
+        console.error("Greška pri učitavanju:", e);
+    }
+}
+
+function saveData() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(game));
+    localStorage.setItem(STATS_KEY, JSON.stringify(stats));
+}
+
+// ==========================================
+// ELEMENTS
+// ==========================================
+
+const board = document.getElementById("board");
+const keyboard = document.getElementById("keyboard");
+const message = document.getElementById("message");
+
+function showToast(text) {
+    const toast = document.getElementById("toast");
+
+    toast.textContent = text;
+    toast.classList.add("show");
+
+    clearTimeout(window.toastTimeout);
+
+    window.toastTimeout = setTimeout(() => {
+        toast.classList.remove("show");
+    }, 1800);
+}
+
+// ==========================================
+// WORDLE COLOR LOGIC
+// ==========================================
+
+function getResult(guess, answer) {
+    const result = Array(5).fill("absent");
+    const g = Array.from(guess);
+    const a = Array.from(answer);
+    const remaining = {};
+
+    for (let i = 0; i < 5; i++) {
+        if (g[i] === a[i]) {
+            result[i] = "correct";
+        } else {
+            remaining[a[i]] = (remaining[a[i]] || 0) + 1;
+        }
+    }
+
+    for (let i = 0; i < 5; i++) {
+        if (result[i] === "correct") continue;
+
+        if (remaining[g[i]] > 0) {
+            result[i] = "present";
+            remaining[g[i]]--;
+        }
+    }
+
+    return result;
+}
+
+// ==========================================
+// BOARD
+// ==========================================
+
+function renderBoard() {
+    board.innerHTML = "";
+
+    const round = game.rounds[game.currentRound];
+
+    for (let row = 0; row < 6; row++) {
+        const guess = round.guesses[row] || "";
+        const letters = Array.from(guess);
+
+        for (let col = 0; col < 5; col++) {
+            const tile = document.createElement("div");
+
+            tile.className = "tile";
+
+            if (row < round.guesses.length) {
+                tile.textContent = letters[col];
+
+                const result = getResult(
+                    guess,
+                    dailyWords[game.currentRound]
+                );
+
+                tile.classList.add(result[col]);
+
+            } else if (
+                row === round.guesses.length &&
+                !round.finished
+            ) {
+                const current = Array.from(game.input);
+
+                tile.textContent = current[col] || "";
+
+                if (current[col]) {
+                    tile.classList.add("filled","pop");
+                }
+            }
+
+            board.appendChild(tile);
+        }
+    }
+}
+
+// ==========================================
+// KEYBOARD COLORS
+// ==========================================
+
+function updateKeyboard() {
+    keyboard.querySelectorAll(".key").forEach(button => {
+        if (button.dataset.action) return;
+
+        const letter = button.textContent.trim();
+        let state = "";
+
+        game.rounds[game.currentRound].guesses.forEach(guess => {
+            const result = getResult(
+                guess,
+                dailyWords[game.currentRound]
+            );
+
+            Array.from(guess).forEach((char,i) => {
+                if (char !== letter) return;
+
+                if (result[i] === "correct") {
+                    state = "correct";
+                } else if (result[i] === "present" && state !== "correct") {
+                    state = "present";
+                } else if (!state) {
+                    state = "absent";
+                }
+            });
+        });
+
+        button.classList.remove("correct","present","absent");
+
+        if (state) button.classList.add(state);
+    });
+}
+
+// ==========================================
+// INPUT
+// ==========================================
+
+function addLetter(letter) {
+    const round = game.rounds[game.currentRound];
+
+    if (game.completed || round.finished) return;
+    if (Array.from(game.input).length >= 5) return;
+
+    game.input += normalize(letter);
+
+    renderBoard();
+    saveData();
+}
+
+function removeLetter() {
+    if (!game.input.length) return;
+
+    game.input = Array.from(game.input).slice(0,-1).join("");
+
+    renderBoard();
+    saveData();
+}
+
+// ==========================================
+// SUBMIT GUESS
+// ==========================================
+
+function submitGuess() {
+    const round = game.rounds[game.currentRound];
+
+    if (game.completed || round.finished) return;
+
+    if (Array.from(game.input).length !== 5) {
+        showToast("Unesi svih 5 slova!");
+        return;
+    }
+
+    const guess = normalize(game.input);
+
+    round.guesses.push(guess);
+    game.input = "";
+
+    if (guess === dailyWords[game.currentRound]) {
+        round.finished = true;
+        round.won = true;
+        message.textContent = "BRAVO! Točan odgovor! 🎉";
+
+    } else if (round.guesses.length >= 6) {
+        round.finished = true;
+        round.won = false;
+        message.textContent = "Riječ je bila: " + dailyWords[game.currentRound];
+
+    } else {
+        message.textContent = "";
+    }
+
+    saveData();
+    renderAll();
+
+    if (round.finished) {
+        setTimeout(nextRound,1200);
+    }
+}
+
+// ==========================================
+// NEXT ROUND
+// ==========================================
+
+function nextRound() {
+    if (game.completed) return;
+
+    if (game.currentRound < 2) {
+        game.currentRound++;
+        game.input = "";
+        message.textContent = "";
+
+        saveData();
+        renderAll();
+
+        if (game.rounds[game.currentRound].finished) {
+            nextRound();
+        }
+
+    } else {
+        finishGame();
+    }
+}
+
+// ==========================================
+// FINISH GAME AND RECORD HISTORY
+// ==========================================
+
+function finishGame() {
+    if (game.completed) return;
+
+    game.completed = true;
+
+    const allWon = game.rounds.every(round => round.won);
+    const wonCount = game.rounds.filter(round => round.won).length;
+    const lostCount = 3 - wonCount;
+
+    const guessesToday = game.rounds.reduce(
+        (sum,round) => sum + round.guesses.length,0
+    );
+
+    stats.games++;
+
+    if (allWon) {
+        stats.wins++;
+        stats.streak++;
+
+        stats.maxStreak = Math.max(
+            stats.maxStreak,
+            stats.streak
+        );
+    } else {
+        stats.streak = 0;
+    }
+
+    stats.lastPlayed = game.date;
+    stats.totalGuesses += guessesToday;
+    stats.wordsLost += lostCount;
+
+    game.rounds.forEach(round => {
+        if (round.won) {
+            stats.wordsWon++;
+            stats.roundsWon++;
+
+            const attempts = round.guesses.length;
+
+            if (attempts >= 1 && attempts <= 6) {
+                stats.distribution[attempts - 1]++;
+                stats.solvedGuessTotal += attempts;
+            }
+
+            if (!stats.bestGuess || attempts < stats.bestGuess) {
+                stats.bestGuess = attempts;
+            }
+        }
+    });
+
+    // Store one daily result for the progress graph and history.
+    stats.history = stats.history.filter(item => item.date !== game.date);
+
+    stats.history.push({
+        date: game.date,
+        won: wonCount,
+        lost: lostCount,
+        perfect: allWon,
+        guesses: guessesToday,
+        attempts: game.rounds.map(round => round.guesses.length)
+    });
+
+    stats.history.sort((a,b) => a.date.localeCompare(b.date));
+    stats.history = stats.history.slice(-90);
+
+    saveData();
+
+    message.textContent = allWon
+        ? "SAVRŠENO! Sve tri riječi! 🏆"
+        : "Gotovo za danas! Vidimo se sutra.";
+
+    renderAll();
+}
+
+// ==========================================
+// ROUNDS
+// ==========================================
+
+function renderRounds() {
+    const element = document.getElementById("rounds");
+
+    element.innerHTML = "";
+
+    game.rounds.forEach((round,index) => {
+        const dot = document.createElement("div");
+
+        dot.className = "round-dot";
+
+        if (index === game.currentRound && !game.completed) {
+            dot.classList.add("active");
+        }
+
+        if (round.finished) {
+            dot.classList.add("done");
+        }
+
+        dot.textContent = round.finished ? "✓" : index + 1;
+        element.appendChild(dot);
+    });
+
+    document.getElementById("roundTitle").textContent =
+        game.completed
+            ? "DNEVNI IZAZOV ZAVRŠEN"
+            : `RIJEČ ${game.currentRound + 1} OD 3`;
+}
+
+function renderAll() {
+    renderRounds();
+    renderBoard();
+    updateKeyboard();
+
+    keyboard.style.opacity = game.completed ? ".4" : "1";
+}
+
+// ==========================================
+// SCENE NAVIGATION
+// ==========================================
+
+function showScene(sceneName) {
+    document.querySelectorAll(".scene").forEach(scene => {
+        scene.classList.remove("active");
+    });
+
+    document.getElementById(sceneName).classList.add("active");
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}
+
+document.getElementById("statsButton").addEventListener("click",() => {
+    renderStats();
+    showScene("statsScene");
+});
+
+document.getElementById("backButton").addEventListener("click",() => {
+    showScene("gameScene");
+});
+
+// ==========================================
+// STATISTICS
+// ==========================================
+
+function renderStats() {
+    document.getElementById("games").textContent = stats.games;
+    document.getElementById("wins").textContent = stats.wins;
+
+    const percentage = stats.games
+        ? Math.round(stats.wins / stats.games * 100)
+        : 0;
+
+    document.getElementById("percentage").textContent = percentage + "%";
+    document.getElementById("streak").textContent = stats.streak;
+    document.getElementById("maxStreak").textContent = stats.maxStreak;
+    document.getElementById("wordsWon").textContent = stats.wordsWon;
+    document.getElementById("roundsWon").textContent = stats.roundsWon;
+    document.getElementById("totalGuesses").textContent = stats.totalGuesses;
+
+    const average = stats.wordsWon
+        ? (stats.solvedGuessTotal / stats.wordsWon).toFixed(1)
+        : "–";
+
+    document.getElementById("average").textContent = average;
+    document.getElementById("wordsLost").textContent = stats.wordsLost;
+
+    document.getElementById("bestGuess").textContent =
+        stats.bestGuess ? stats.bestGuess + " pokušaja" : "–";
+
+    document.getElementById("lastPlayed").textContent =
+        stats.lastPlayed
+            ? new Date(stats.lastPlayed + "T12:00:00").toLocaleDateString("hr-HR")
+            : "–";
+
+    renderDistribution();
+    renderDonut();
+    renderProgressChart();
+    renderHistory();
+}
+
+// ==========================================
+// ATTEMPT DISTRIBUTION
+// ==========================================
+
+function renderDistribution() {
+    const distribution = document.getElementById("distribution");
+    distribution.innerHTML = "";
+
+    const max = Math.max(...stats.distribution,1);
+
+    stats.distribution.forEach((count,index) => {
+        const row = document.createElement("div");
+        row.className = "dist-row";
+
+        const number = document.createElement("span");
+        number.className = "dist-number";
+        number.textContent = index + 1;
+
+        const wrap = document.createElement("div");
+        wrap.className = "dist-bar-wrap";
+
+        const bar = document.createElement("div");
+        bar.className = "dist-bar";
+
+        const width = count === 0 ? 0 : Math.max(9,count / max * 100);
+
+        bar.style.width = width + "%";
+        bar.textContent = count;
+
+        if (count > 0 && count === max) {
+            bar.classList.add("highlight");
+        }
+
+        wrap.appendChild(bar);
+        row.append(number,wrap);
+        distribution.appendChild(row);
+    });
+}
+
+// ==========================================
+// DONUT CHART
+// ==========================================
+
+function renderDonut() {
+    const total = stats.wordsWon + stats.wordsLost;
+
+    const percent = total
+        ? Math.round(stats.wordsWon / total * 100)
+        : 0;
+
+    const degrees = percent * 3.6;
+
+    document.getElementById("donut").style.background =
+        `conic-gradient(#538d4e 0deg ${degrees}deg,#39443c ${degrees}deg 360deg)`;
+
+    document.getElementById("donutPercent").textContent = percent + "%";
+    document.getElementById("donutWon").textContent = stats.wordsWon;
+    document.getElementById("donutLost").textContent = stats.wordsLost;
+}
+
+// ==========================================
+// 14-DAY PROGRESS LINE CHART
+// ==========================================
+
+function renderProgressChart() {
+    const svg = document.getElementById("lineChart");
+    const container = document.getElementById("lineChartContainer");
+
+    const history = stats.history || [];
+
+    if (!history.length) {
+        container.innerHTML = `
+            <div class="chart-empty">
+                Graf će se prikazivati nakon što završiš prvi dnevni izazov.<br>
+                Odigraj Crodle i prati svoj napredak!
+            </div>`;
+        return;
+    }
+
+    if (!document.getElementById("lineChart")) {
+        container.innerHTML = '<svg id="lineChart" viewBox="0 0 600 210" preserveAspectRatio="none"></svg>';
+    }
+
+    const chart = document.getElementById("lineChart");
+    const today = new Date();
+    const points = [];
+
+    for (let i = 13; i >= 0; i--) {
+        const date = new Date(today);
+        date.setDate(today.getDate() - i);
+
+        const key = [
+            date.getFullYear(),
+            String(date.getMonth()+1).padStart(2,"0"),
+            String(date.getDate()).padStart(2,"0")
+        ].join("-");
+
+        const record = history.find(item => item.date === key);
+
+        points.push({
+            date: date,
+            record: record || null,
+            value: record ? record.won / 3 * 100 : null
+        });
+    }
+
+    const left = 38;
+    const right = 585;
+    const top = 15;
+    const bottom = 165;
+    const width = right - left;
+    const height = bottom - top;
+
+    let markup = "";
+
+    [0,25,50,75,100].forEach(value => {
+        const y = bottom - (value / 100) * height;
+
+        markup += `
+            <line x1="${left}" y1="${y}" x2="${right}" y2="${y}"
+                stroke="#ffffff18" stroke-width="1"/>
+            <text x="27" y="${y+4}" fill="#879789"
+                font-size="10" text-anchor="end">${value}</text>`;
+    });
+
+    const plotted = [];
+
+    points.forEach((point,index) => {
+        if (point.value === null) return;
+
+        const x = left + (index / 13) * width;
+        const y = bottom - (point.value / 100) * height;
+
+        plotted.push({x,y,point,index});
+    });
+
+    if (plotted.length > 1) {
+        const line = plotted.map(p => `${p.x},${p.y}`).join(" ");
+
+        markup += `
+            <polyline points="${line}" fill="none"
+                stroke="#75b982" stroke-width="3"
+                stroke-linecap="round" stroke-linejoin="round"/>`;
+    }
+
+    plotted.forEach(p => {
+        const label = String(p.point.date.getDate()) + ".";
+
+        markup += `
+            <circle cx="${p.x}" cy="${p.y}" r="5"
+                fill="#75b982" stroke="#19231b" stroke-width="2">
+                <title>${label} ${p.point.value}% uspješnosti</title>
+            </circle>`;
+    });
+
+    [0,3,6,9,13].forEach(index => {
+        const x = left + (index / 13) * width;
+        const date = points[index].date;
+        const label = date.getDate() + "." + (date.getMonth()+1) + ".";
+
+        markup += `
+            <text x="${x}" y="192" fill="#879789"
+                font-size="10" text-anchor="middle">${label}</text>`;
+    });
+
+    chart.innerHTML = markup;
+}
+
+// ==========================================
+// HISTORY LIST
+// ==========================================
+
+function renderHistory() {
+    const list = document.getElementById("historyList");
+    list.innerHTML = "";
+
+    const history = [...(stats.history || [])].sort(
+        (a,b) => b.date.localeCompare(a.date)
+    );
+
+    if (!history.length) {
+        list.innerHTML = `
+            <div class="history-empty">
+                Još nema spremljenih rezultata.<br>
+                Tvoja povijest pojavit će se nakon prvog završenog izazova.
+            </div>`;
+        return;
+    }
+
+    history.slice(0,10).forEach(item => {
+        const row = document.createElement("div");
+        row.className = "history-item";
+
+        const left = document.createElement("div");
+
+        const date = document.createElement("div");
+        date.className = "history-date";
+        date.textContent = new Date(item.date + "T12:00:00")
+            .toLocaleDateString("hr-HR",{
+                day:"numeric",
+                month:"long",
+                year:"numeric"
+            });
+
+        const detail = document.createElement("div");
+        detail.className = "history-detail";
+        detail.textContent =
+            `${item.won} od 3 riječi • ${item.guesses} pokušaja`;
+
+        left.append(date,detail);
+
+        const result = document.createElement("div");
+        result.className = "history-result " +
+            (item.perfect ? "good" : "partial");
+
+        result.textContent = item.perfect
+            ? "🏆 SAVRŠENO"
+            : `${item.won}/3 RIJEŠENO`;
+
+        row.append(left,result);
+        list.appendChild(row);
+    });
+}
+
+// ==========================================
+// HELP
+// ==========================================
+
+document.getElementById("helpButton").addEventListener("click",() => {
+    document.getElementById("helpModal").classList.add("show");
+});
+
+document.querySelectorAll("[data-close]").forEach(button => {
+    button.addEventListener("click",() => {
+        document.getElementById(button.dataset.close).classList.remove("show");
+    });
+});
+
+document.querySelectorAll(".modal").forEach(modal => {
+    modal.addEventListener("click",event => {
+        if (event.target === modal) {
+            modal.classList.remove("show");
+        }
+    });
+});
+
+// ==========================================
+// PHYSICAL KEYBOARD
+// ==========================================
+
+document.addEventListener("keydown",event => {
+    if (
+        event.target.tagName === "INPUT" ||
+        event.target.tagName === "TEXTAREA"
+    ) return;
+
+    if (document.getElementById("helpModal").classList.contains("show")) {
+        if (event.key === "Escape") {
+            document.getElementById("helpModal").classList.remove("show");
+        }
+        return;
+    }
+
+    if (!document.getElementById("gameScene").classList.contains("active")) {
+        return;
+    }
+
+    if (event.key === "Enter") {
+        event.preventDefault();
+        submitGuess();
+        return;
+    }
+
+    if (event.key === "Backspace") {
+        event.preventDefault();
+        removeLetter();
+        return;
+    }
+
+    const key = normalize(event.key);
+
+    if (/^[A-ZČĆĐŠŽ]$/.test(key)) {
+        addLetter(key);
+    }
+});
+
+// ==========================================
+// MOBILE KEYBOARD
+// ==========================================
+
+keyboard.addEventListener("click",event => {
+    const button = event.target.closest(".key");
+
+    if (!button) return;
+
+    if (button.dataset.action === "enter") {
+        submitGuess();
+    } else if (button.dataset.action === "backspace") {
+        removeLetter();
+    } else {
+        addLetter(button.textContent.trim());
+    }
+});
+
+// ==========================================
+// SNOW
+// ==========================================
+
+function createSnow() {
+    const container = document.getElementById("snowContainer");
+    const symbols = ["❄","✦","❅","•"];
+
+    for (let i = 0; i < 150; i++) {
+        const snow = document.createElement("div");
+
+        snow.className = "snow";
+        snow.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+        snow.style.left = Math.random() * 100 + "vw";
+        snow.style.fontSize = (7 + Math.random() * 17) + "px";
+        snow.style.opacity = (0.2 + Math.random() * 0.65).toFixed(2);
+        snow.style.animationDuration = (7 + Math.random() * 17) + "s";
+        snow.style.animationDelay = (-Math.random() * 22) + "s";
+
+        container.appendChild(snow);
+    }
+}
+
+// ==========================================
+// START
+// ==========================================
+
+loadData();
+createSnow();
+renderAll();
+
+if (game.completed) {
+    message.textContent = "🎄 Dnevni izazov je završen!";
+}
+
+</script>
+
+</body>
+</html>
