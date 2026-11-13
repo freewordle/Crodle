@@ -5,7 +5,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#101510">
+<icon rel="icon" href="crodle-icon.png" type="image/png">
 <title>Crodle</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
 <style>
 :root {
@@ -28,7 +33,7 @@ body {
         radial-gradient(ellipse at 50% 0%, #23402b 0%, transparent 55%),
         var(--bg);
     color: var(--text);
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Outfit', sans-serif;
     overflow-x: hidden;
 }
 
@@ -59,7 +64,7 @@ button { font-family: inherit; }
     100% { transform: translate3d(-25px,110vh,0) rotate(360deg); }
 }
 
-/* BIGGER CHRISTMAS TREES */
+/* CHRISTMAS TREES */
 
 .side-tree {
     position: fixed;
@@ -115,6 +120,7 @@ header {
 .subtitle {
     color: #aab9ac;
     font-size: 11px;
+    font-weight: 500;
     letter-spacing: 2px;
     margin-top: 5px;
 }
@@ -175,6 +181,7 @@ header {
     margin: 12px 0 15px;
     color: #b9c9bd;
     font-size: 12px;
+    font-weight: 600;
 }
 
 .rounds { display: flex; gap: 7px; }
@@ -206,6 +213,7 @@ header {
     color: #e4d6a6;
     margin-bottom: 15px;
     letter-spacing: 1px;
+    font-weight: 600;
 }
 
 /* WORDLE BOARD */
@@ -251,7 +259,7 @@ header {
     margin: 2px 0 9px;
     color: #e5d9b6;
     font-size: 14px;
-    font-weight: bold;
+    font-weight: 700;
     text-align: center;
 }
 
@@ -281,7 +289,7 @@ header {
     background: #56635a;
     color: white;
     font-size: 14px;
-    font-weight: bold;
+    font-weight: 700;
     cursor: pointer;
 }
 
@@ -302,6 +310,7 @@ header {
 .bottom-info {
     color: #85988a;
     font-size: 11px;
+    font-weight: 500;
     text-align: center;
     margin-top: 19px;
     letter-spacing: .5px;
@@ -330,6 +339,7 @@ header {
     border-radius: 10px;
     cursor: pointer;
     font-size: 13px;
+    font-weight: 600;
     transition: .2s;
 }
 
@@ -345,11 +355,13 @@ header {
     font-size: 11px;
     letter-spacing: 3px;
     margin-bottom: 10px;
+    font-weight: 600;
 }
 
 .stats-heading h1 {
     margin: 0;
     font-size: 34px;
+    font-weight: 800;
     letter-spacing: -.5px;
 }
 
@@ -407,6 +419,7 @@ header {
     color: #a8b9aa;
     margin-top: 6px;
     letter-spacing: 1.2px;
+    font-weight: 600;
 }
 
 .stats-section { margin-top: 30px; }
@@ -422,6 +435,7 @@ header {
     font-size: 13px;
     letter-spacing: 1.3px;
     margin: 0;
+    font-weight: 700;
 }
 
 .section-heading span {
@@ -448,7 +462,7 @@ header {
 .chart-title {
     color: #cbd6cd;
     font-size: 12px;
-    font-weight: bold;
+    font-weight: 700;
     margin-bottom: 17px;
 }
 
@@ -513,7 +527,7 @@ header {
 .dist-number {
     width: 13px;
     color: #c3ccc5;
-    font-weight: bold;
+    font-weight: 700;
 }
 
 .dist-bar-wrap {
@@ -535,7 +549,7 @@ header {
     justify-content: flex-end;
     color: white;
     font-size: 12px;
-    font-weight: bold;
+    font-weight: 700;
     transition: width .4s ease;
 }
 
@@ -581,6 +595,7 @@ header {
 .donut-center strong {
     display: block;
     font-size: 27px;
+    font-weight: 800;
 }
 
 .donut-center span {
@@ -628,6 +643,7 @@ header {
     color: #a8b9aa;
     font-size: 10px;
     letter-spacing: 1px;
+    font-weight: 600;
 }
 
 .extra-card .value {
@@ -658,7 +674,7 @@ header {
 .history-date {
     font-size: 12px;
     color: #dce5dd;
-    font-weight: bold;
+    font-weight: 700;
 }
 
 .history-detail {
@@ -669,12 +685,13 @@ header {
 
 .history-result {
     font-size: 12px;
-    font-weight: bold;
+    font-weight: 700;
     white-space: nowrap;
 }
 
 .history-result.good { color: #83c77b; }
 .history-result.partial { color: #d2b75d; }
+
 .history-empty {
     text-align: center;
     color: #8fa092;
@@ -694,7 +711,7 @@ header {
 }
 
 .stats-footer .big { font-size: 25px; margin-bottom: 8px; }
-.stats-footer h3 { font-size: 15px; margin: 0 0 7px; }
+.stats-footer h3 { font-size: 15px; margin: 0 0 7px; font-weight: 700; }
 .stats-footer p {
     color: #b5c2b7;
     font-size: 12px;
@@ -735,6 +752,7 @@ header {
     margin: 0 0 23px;
     text-align: center;
     font-size: 23px;
+    font-weight: 800;
 }
 
 .close {
@@ -763,7 +781,7 @@ header {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: bold;
+    font-weight: 700;
     border-radius: 4px;
     flex-shrink: 0;
 }
@@ -777,7 +795,7 @@ header {
     color: #151515;
     padding: 12px 20px;
     border-radius: 8px;
-    font-weight: bold;
+    font-weight: 700;
     font-size: 13px;
     display: none;
     z-index: 20;
@@ -971,8 +989,6 @@ header {
         </div>
     </div>
 
-    <!-- CHARTS -->
-
     <div class="stats-section">
         <div class="section-heading">
             <h3>NAPREDAK KROZ VRIJEME</h3>
@@ -1029,8 +1045,6 @@ header {
         </div>
     </div>
 
-    <!-- EXTRA STATS -->
-
     <div class="stats-section">
         <div class="section-heading">
             <h3>DODATNA STATISTIKA</h3>
@@ -1069,8 +1083,6 @@ header {
             </div>
         </div>
     </div>
-
-    <!-- HISTORY -->
 
     <div class="stats-section">
         <div class="section-heading">
@@ -1256,7 +1268,6 @@ function loadData() {
         if (savedGame && savedGame.date === getDateKey()) {
             game = savedGame;
 
-            // Make sure older saved games have all required fields.
             if (!Array.isArray(game.rounds) || game.rounds.length !== 3) {
                 game = createNewGame();
             }
@@ -1552,7 +1563,6 @@ function finishGame() {
         }
     });
 
-    // Store one daily result for the progress graph and history.
     stats.history = stats.history.filter(item => item.date !== game.date);
 
     stats.history.push({
@@ -1747,9 +1757,7 @@ function renderDonut() {
 // ==========================================
 
 function renderProgressChart() {
-    const svg = document.getElementById("lineChart");
     const container = document.getElementById("lineChartContainer");
-
     const history = stats.history || [];
 
     if (!history.length) {
