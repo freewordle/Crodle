@@ -1,1 +1,3 @@
 # Crodle
+
+Hrvatski Wordle
